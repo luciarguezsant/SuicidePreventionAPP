@@ -20,7 +20,8 @@ import tensorflow as tf
 import os
 import sys
 
-
+file_dir = os.path.join(os.getcwd(), "SEANCE-master")
+sys.path.append(file_dir)
 import SEANCE_1_2_0
 
 
@@ -504,6 +505,7 @@ class AnalysisThread(QThread):
             numTweetsTotales += numTweets
             scrollDistance = 0
             valorCargaPorPublicacion = valorCargaPorUsuario//numTweets
+            if valorCargaPorPublicacion == 0: valorCargaPorPublicacion = 1
             while len(Tweets) < numTweetsTotales:  # While not all tweets have been extracted
                 articles = WebDriverWait(driver, 30).until(
                     EC.presence_of_all_elements_located((By.XPATH, "//article[@data-testid='tweet']")))
@@ -526,7 +528,8 @@ class AnalysisThread(QThread):
                             UserTags.append(usersList[i] +" "+ UserTag[startUser:])
                         else:
                             UserTags.append(UserTag[startUser:])
-                        cargaProgressBar += valorCargaPorPublicacion
+                        if cargaProgressBar < 50:
+                            cargaProgressBar += valorCargaPorPublicacion
                         self.update_progressbar.emit(int(cargaProgressBar), str(len(Tweets)) + " tweets extracted",
                                                      str(len(Tweets)) + " tweets extraídos")
                 scrollDistance += 600

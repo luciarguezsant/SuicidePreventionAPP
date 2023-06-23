@@ -13,6 +13,8 @@ from tkinter import messagebox
 
 import os
 import sys
+file_dir = os.path.join(os.getcwd(),"SEANCE-master", "data_files")
+sys.path.append(file_dir)
 import vaderSentiment
 import re
 import platform

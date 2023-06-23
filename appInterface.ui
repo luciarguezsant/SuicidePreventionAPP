@@ -420,7 +420,7 @@ image: url(:/foto/logo2.png);
      <enum>Qt::PlainText</enum>
     </property>
     <property name="pixmap">
-     <pixmap resource="C:/Users/lucia/Desktop/test.qrc">:/foto/lenguahe2.png</pixmap>
+     <pixmap resource="../../../../Desktop/test.qrc">:/foto/lenguahe2.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -446,7 +446,7 @@ color: rgb(251, 234, 255);
 text-align: center;</string>
     </property>
     <property name="text">
-     <string>Ir a resultados</string>
+     <string>Go to results</string>
     </property>
    </widget>
   </widget>
@@ -462,8 +462,8 @@ text-align: center;</string>
   </widget>
  </widget>
  <resources>
-  <include location="C:/Users/lucia/Downloads/Space_Grotesk/fileLetraFont.qrc"/>
-  <include location="C:/Users/lucia/Desktop/test.qrc"/>
+  <include location="../../../../Downloads/Space_Grotesk/fileLetraFont.qrc"/>
+  <include location="../../../../Desktop/test.qrc"/>
  </resources>
  <connections/>
 </ui>
