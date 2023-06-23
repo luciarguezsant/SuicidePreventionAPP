@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="prefijoNuevo">
+    <file>static/SpaceGrotesk-Regular.ttf</file>
+    <file>static/SpaceGrotesk-SemiBold.ttf</file>
+    <file>static/SpaceGrotesk-Medium.ttf</file>
+    <file>static/SpaceGrotesk-Light.ttf</file>
+    <file>static/SpaceGrotesk-Bold.ttf</file>
+  </qresource>
+</RCC>
