@@ -114,9 +114,8 @@ border-color: rgb(253, 228, 255);
    <property name="styleSheet">
     <string notr="true">background-color: white;
     color: rgb(13, 0, 77);
-    height: 35px;
-    width: 150px; 
-    font: 12px;</string>
+    font: 12px;
+</string>
    </property>
    <property name="sizeAdjustPolicy">
     <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>

@@ -1173,7 +1173,6 @@ def main( df, columnTextName, var_list):
 			#
 			
 			Text = df.at[indice, columnTextName]
-			print("Text", Text)
 			#the text has educated quotes and we want straight quotes. 
 			text = re.sub("‘", "'", str(Text)) #bottom heavy educated quote replaced by straight quotes
 			text= re.sub("’", "'", text) #top heavy educated quote replaced by straight quotes

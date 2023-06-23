@@ -9,17 +9,16 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from nltk.tokenize import  word_tokenize
+from nltk.tokenize import word_tokenize
 from gensim.models import Word2Vec
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QFontDatabase, QPixmap
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
-from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QTableWidgetItem, QHeaderView
 import tensorflow as tf
 import os
 import sys
-import sklearn.metrics as sk_metrics
 
 
 import SEANCE_1_2_0
@@ -39,6 +38,7 @@ class WelcomeWindow(QDialog):
         if value == "Español":
             widget.setCurrentIndex(windows["Bienvenido"])
             self.lenguageComboBox.setCurrentIndex(0)
+
 
 class BienvenidoWindow(QDialog):
     def __init__(self):
@@ -72,10 +72,16 @@ class MainWindow(QMainWindow):
         self.progressBar.hide()
         self.updateLabel.hide()
         self.quitButton.hide()
+        self.quitButton.clicked.connect(self.quit_analysis)
+        self.goToResultsButton.clicked.connect(self.go_to_results)
         self.label_4.setPixmap(QPixmap("logo2.png"))
+        self.threadHasBeenTerminated = False
 
     def go_back(self):
         widget.setCurrentIndex(windows["Welcome"])
+
+    def go_to_results(self):
+        widget.setCurrentIndex(windows["Results"])
 
     def add_account(self):
         accountID = self.accountLineEdit.text()
@@ -107,6 +113,12 @@ class MainWindow(QMainWindow):
         if value == "Español":
             widget.setCurrentIndex(windows["Clasificador"])
             self.lenguageComboBox.setCurrentIndex(0)
+            clasificador.accountListWidget.clear()
+            clasificador.setAccounts.clear()
+            numItems = self.accountListWidget.count()
+            for x in range(numItems):
+                clasificador.accountListWidget.addItem(self.accountListWidget.item(x).text())
+                clasificador.setAccounts.add(self.accountListWidget.item(x).text())
 
     def delete_account(self):
         items = self.accountListWidget.selectedItems()
@@ -125,36 +137,44 @@ class MainWindow(QMainWindow):
         else:
             self.analyzeButton.setEnabled(False)
             self.update_progressbar(0, "Extracting data", "Extrayendo datos")
+            self.goToResultsButton.hide()
             self.progressBar.show()
             self.updateLabel.show()
-            #self.quitButton.show()
+            self.quitButton.show()
             ventanaResults = widget.widget(windows["Results"])
             self.myThread = AnalysisThread(list(self.setAccounts))
             self.myThread.start()
             self.myThread.update_progressbar.connect(self.update_progressbar)
             self.myThread.update_table.connect(ventanaResults.add_table)
             self.myThread.finished.connect(self.open_results)
-            self.analyzeButton.setDisabled(False)
 
     def update_progressbar(self, val, textEn, testEs):
         self.progressBar.setValue(val)
         self.updateLabel.setText(textEn)
 
     def open_results(self):
-        widget.setCurrentIndex(windows["Results"])
-        self.accountListWidget.clear()
-        self.setAccounts.clear()
-        self.progressBar.hide()
-        self.updateLabel.hide()
-        #self.quitButton.hide()
+        if self.threadHasBeenTerminated:
+            self.threadHasBeenTerminated = False
+            self.analyzeButton.setDisabled(False)
+        else:
+            widget.setCurrentIndex(windows["Results"])
+            self.accountListWidget.clear()
+            self.setAccounts.clear()
+            self.progressBar.hide()
+            self.updateLabel.hide()
+            self.quitButton.hide()
+            self.goToResultsButton.show()
+            self.analyzeButton.setDisabled(False)
 
-    # def quit_analysis(self):
-    #     if not self.myThread.isFinished():
-    #         self.myThread.quit()
-    #         self.myThread.wait()
-    #         self.progressBar.hide()
-    #         self.updateLabel.hide()
-    #         self.quitButton.hide()
+    def quit_analysis(self):
+        if not self.myThread.isFinished():
+            self.threadHasBeenTerminated = True
+            self.myThread.terminate()
+            self.myThread.wait()
+            self.progressBar.hide()
+            self.updateLabel.hide()
+            self.quitButton.hide()
+            self.goToResultsButton.show()
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
@@ -173,10 +193,16 @@ class VentanaPrincipal(QMainWindow):
         self.progressBar.hide()
         self.updateLabel.hide()
         self.quitButton.hide()
-        # self.quitButton.clicked.connect(self.quit_analysis)
+        self.quitButton.clicked.connect(self.quit_analysis)
+        self.goToResultsButton.clicked.connect(self.go_to_results)
         self.label_4.setPixmap(QPixmap("logo2.png"))
+        self.threadHasBeenTerminated = False
+
     def go_back(self):
         widget.setCurrentIndex(windows["Bienvenido"])
+
+    def go_to_results(self):
+        widget.setCurrentIndex(windows["Results"])
 
     def add_account(self):
         accountID = self.accountLineEdit.text()
@@ -207,6 +233,12 @@ class VentanaPrincipal(QMainWindow):
         if value == "English":
             widget.setCurrentIndex(windows["Classifier"])
             self.lenguageComboBox.setCurrentIndex(0)
+            classifier.accountListWidget.clear()
+            classifier.setAccounts.clear()
+            numItems = self.accountListWidget.count()
+            for x in range(numItems):
+                classifier.accountListWidget.addItem(self.accountListWidget.item(x).text())
+                classifier.setAccounts.add(self.accountListWidget.item(x).text())
 
     def delete_account(self):
         items = self.accountListWidget.selectedItems()
@@ -225,9 +257,10 @@ class VentanaPrincipal(QMainWindow):
         else:
             self.analyzeButton.setEnabled(False)
             self.update_progressbar(0, "Extracting data","Extrayendo datos")
+            self.goToResultsButton.hide()
             self.progressBar.show()
             self.updateLabel.show()
-            # self.quitButton.show()
+            self.quitButton.show()
             ventanaResults = widget.widget(windows["Results"])
             ventanaResults.lenguageComboBox.setCurrentIndex(1)
             self.myThread = AnalysisThread(list(self.setAccounts))
@@ -235,30 +268,36 @@ class VentanaPrincipal(QMainWindow):
             self.myThread.update_progressbar.connect(self.update_progressbar)
             self.myThread.update_table.connect(ventanaResults.add_table)
             self.myThread.finished.connect(self.open_results)
-            self.analyzeButton.setDisabled(False)
-
 
     def update_progressbar(self, val, textEn, testEs):
         self.progressBar.setValue(val)
         self.updateLabel.setText(testEs)
 
     def open_results(self):
-        ventanaResults = widget.widget(windows["Results"])
-        ventanaResults.lenguageComboBox.setCurrentIndex(1)
-        widget.setCurrentIndex(windows["Results"])
-        self.accountListWidget.clear()
-        self.setAccounts.clear()
-        self.progressBar.hide()
-        self.updateLabel.hide()
-        # self.quitButton.hide()
+        if self.threadHasBeenTerminated:
+            self.threadHasBeenTerminated = False
+            self.analyzeButton.setDisabled(False)
+        else:
+            ventanaResults = widget.widget(windows["Results"])
+            ventanaResults.lenguageComboBox.setCurrentIndex(1)
+            widget.setCurrentIndex(windows["Results"])
+            self.accountListWidget.clear()
+            self.setAccounts.clear()
+            self.progressBar.hide()
+            self.updateLabel.hide()
+            self.quitButton.hide()
+            self.goToResultsButton.show()
+            self.analyzeButton.setDisabled(False)
 
-    # def quit_analysis(self):
-    #     if not self.myThread.isFinished():
-    #         self.myThread.quit()
-    #         self.myThread.wait()
-    #         self.progressBar.hide()
-    #         self.updateLabel.hide()
-    #         self.quitButton.hide()
+    def quit_analysis(self):
+        if not self.myThread.isFinished():
+            self.threadHasBeenTerminated = True
+            self.myThread.terminate()
+            self.myThread.wait()
+            self.progressBar.hide()
+            self.updateLabel.hide()
+            self.quitButton.hide()
+            self.goToResultsButton.show()
 
 class ResultsWindow(QDialog):
     def __init__(self):
@@ -275,14 +314,16 @@ class ResultsWindow(QDialog):
             self.tableWidget.setHorizontalHeaderLabels(["Usuario", "Tweet", "Resultado clasificación"])
         else:
             self.tableWidget.setHorizontalHeaderLabels(["UserTag", "Tweet", "Classification Result"])
-        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        #self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView..Stretch)
+        scrollbar = self.tableWidget.verticalScrollBar()
+        scrollbar.setStyleSheet("QScrollBar:vertical { width: 25px; }")
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.lenguageComboBox.currentTextChanged.connect(self.change_lenguage)
 
-        # l = QVBoxLayout()
-        # l.addSpacing(290)
-        # l.setContentsMargins(0, 0, 0, 0)
-        # l.addWidget(self.tableWidget)
-        # self.setLayout(l)
+
 
     def go_back(self):
         if self.lenguageComboBox.currentText() == "Español":
@@ -325,9 +366,13 @@ class DeleteTableDialog(QDialog):
         loadUi("BorrarTablaMensaje.ui", self)
         self.yesButton.clicked.connect(self.empty_table)
         self.noButton.clicked.connect(self.close)
+        if results.lenguageComboBox.currentText() == "Español":
+            self.label.setText("¿Quieres vaciar la tabla?")
+            self.label.setAlignment(Qt.AlignCenter)
+            self.yesButton.setText("Sí")
+            self.noButton.setText("No")
 
     def empty_table(self):
-        print("Clicado empty")
         results.tableWidget.clear()
         if results.lenguageComboBox.currentText() == "Español":
             results.tableWidget.setHorizontalHeaderLabels(["Usuario", "Tweet", "Resultado clasificación"])
@@ -364,9 +409,6 @@ class AnalysisThread(QThread):
 
         # Transformar dataframe a tensorflow object
         x_test = tf.convert_to_tensor(df_procesado_final, dtype=tf.float32)
-        # x_test, y_test = df_procesado_final.iloc[:, :-1], df_procesado_final.iloc[:, -1]
-        # y_test = y_test.map({'non-suicide': 0, 'suicide': 1})
-        # x_test, y_test = tf.convert_to_tensor(x_test, dtype=tf.float32), tf.convert_to_tensor(y_test, dtype=tf.float32)
 
         # Cragar modelo de clasificacion Logistic Regresion Tensorflow
         save_path = os.path.join('ResultadosLogisticRegresion',
@@ -375,18 +417,6 @@ class AnalysisThread(QThread):
         # Realizar prediccion
         test_preds = log_reg_loaded.get_predictions(x_test)
         self.update_progressbar.emit(95, "Classification done", "Clasificación terminada")
-
-        # # Precision = TruePositives / (TruePositives + FalsePositives)
-        # precision = sk_metrics.precision_score(y_test, test_preds, average='binary')
-        # # Recall = TruePositives / (TruePositives + FalseNegatives)
-        # recall = sk_metrics.recall_score(y_test, test_preds, average='binary')
-        # # F-Measure = (2 * Precision * Recall) / (Precision + Recall)
-        # fmeasure = sk_metrics.f1_score(y_test, test_preds, average='binary')
-        # print("\nPredicciones: ", test_preds.numpy())
-        # print("Clase real:   ", y_test.numpy())
-        # print(f"Test precision: {precision:.3f}")
-        # print(f"Test recall: {recall:.3f}")
-        # print(f"Test fmeasure: {fmeasure:.3f}")
 
         self.update_progressbar.emit(100,  "Results generated", "Resultados generados")
         for indice, fila in df_tweets.iterrows():
@@ -426,46 +456,41 @@ class AnalysisThread(QThread):
         log_in = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Log in')]")))
         log_in.click()
-        print("log in hecho")
         self.update_progressbar.emit(cargaProgressBar, "Logged in successfully", "Sesión iniciada correctamente")
 
         UserTags = []
         Tweets = []
         numTweetsTotales = 0
         valorCargaPorUsuario= 40//len(usersList)
-        for i in range(0, len(usersList)):
-            print(usersList[i])
-
+        for i in range(0, len(usersList)):  # For each user
             botonLupa = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, '//a[@href="/explore"]')))
             botonLupa.click()
-            print("Lupa")
             search_box = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@data-testid='SearchBox_Search_Input']")))
             search_box.send_keys(usersList[i])
             search_box.send_keys(Keys.ENTER)
-            print("Buscado user")
             people = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'People')]")))
             people.click()
-            print("Personas")
             try:
                 profile = WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located(
                         (By.XPATH,
-                         "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[3]/section/div/div/div/div/div[1]/div/div/div/div/div[2]/div[1]")))
+                         "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div"
+                         "/div[3]/section/div/div/div/div/div[1]/div/div/div/div/div[2]/div[1]")))
             except Exception:
                 profile = WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located(
                         (By.XPATH,
-                         "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[3]/section/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[1]/div/div[2]/div/a/div/div/span")))
+                         "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[3]/section"
+                         "/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[1]/div/div[2]/div/a/div/div/span")))
             profile.click()
             print("Entrado en perfil de", usersList[i])
             numTweetsString = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div"
                                "/div[1]/div[1]/div/div/div/div/div/div[2]/div/div"))).text
-            print("Wioo", numTweetsString)
             miles = numTweetsString.find('K Tweets')
             millones = numTweetsString.find('M Tweets')
             if miles == -1 and millones == -1:
@@ -475,30 +500,32 @@ class AnalysisThread(QThread):
                     numTweets = 30
             else:
                 numTweets = 30  # Max 30 tweets
-            print("N Tweets", numTweets, numTweetsTotales, int(numTweetsString[:end]))
 
             numTweetsTotales += numTweets
             scrollDistance = 0
             valorCargaPorPublicacion = valorCargaPorUsuario//numTweets
-            while len(Tweets) < numTweetsTotales:
-                print(len(Tweets),numTweetsTotales)
+            while len(Tweets) < numTweetsTotales:  # While not all tweets have been extracted
                 articles = WebDriverWait(driver, 30).until(
                     EC.presence_of_all_elements_located((By.XPATH, "//article[@data-testid='tweet']")))
-                for article in articles:  # tweets available in the window
+                for article in articles:  # For each tweet available in the screen
                     try:
                         Tweet = article.find_element(By.XPATH, ".//div[@data-testid='tweetText']").text.replace('\n',
                                                                                                                 ' ')
                         UserTag = article.find_element(By.XPATH, ".//div[@data-testid='User-Name']").text.replace('\n',
                                                                                                                   ' ')
                     except NoSuchElementException:
-                        if miles == -1 and millones == -1 and int(numTweetsString[:end]) < 45: # pocos tweets y algunos sin texto
+                        if miles == -1 and millones == -1 and int(numTweetsString[:end]) < 50:  # few tweets
                             numTweetsTotales -=1
                         print("Tweet sin texto o etiqueta de usuario")
                         break
                     if Tweet not in Tweets and len(Tweets) < numTweetsTotales:
                         Tweets.append(Tweet)
                         startUser = UserTag.rfind('@')
-                        UserTags.append(UserTag[startUser:])
+                        retweet = UserTag.find(usersList[i])
+                        if retweet == -1:  # It's a retweet
+                            UserTags.append(usersList[i] +" "+ UserTag[startUser:])
+                        else:
+                            UserTags.append(UserTag[startUser:])
                         cargaProgressBar += valorCargaPorPublicacion
                         self.update_progressbar.emit(int(cargaProgressBar), str(len(Tweets)) + " tweets extracted",
                                                      str(len(Tweets)) + " tweets extraídos")
@@ -506,7 +533,7 @@ class AnalysisThread(QThread):
                 driver.execute_script('window.scrollTo(' + str(scrollDistance - 600) + ',' + str(
                     scrollDistance) + ');')  # scroll down to get more tweets
                 time.sleep(1.5)
-            print(len(UserTags), len(Tweets))
+            print("Extraídos", len(Tweets), "tweets.")
 
         driver.quit()
         df = pd.DataFrame(zip(UserTags, Tweets)
@@ -585,8 +612,7 @@ if __name__ == '__main__':
         "Bienvenido": 1,
         "Classifier": 2,
         "Clasificador": 3,
-        "Results": 4,
-        "Delete": 5
+        "Results": 4
     }
     QFontDatabase.addApplicationFont('Space_Grotesk\static\SpaceGrotesk-Bold.ttf')
     QFontDatabase.addApplicationFont('Space_Grotesk\static\SpaceGrotesk-Light.ttf')
@@ -598,17 +624,16 @@ if __name__ == '__main__':
     classifier = MainWindow()
     clasificador = VentanaPrincipal()
     results = ResultsWindow()
-    #deleteDialog = DeleteTableDialog()
     widget = QtWidgets.QStackedWidget()
     widget.addWidget(welcome)
     widget.addWidget(bienvenido)
     widget.addWidget(classifier)
     widget.addWidget(clasificador)
     widget.addWidget(results)
-    #widget.addWidget(deleteDialog)
     widget.setFixedHeight(800)
     widget.setFixedWidth(930)
     widget.setCurrentIndex(windows["Welcome"])
+    widget.setWindowTitle("Suicide prevention App")
     widget.show()
     # Start the event loop.
     try: sys.exit(app.exec_())

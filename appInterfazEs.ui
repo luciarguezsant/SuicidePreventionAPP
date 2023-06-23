@@ -407,6 +407,29 @@ image: url(:/foto/logo2.png);
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="goToResultsButton">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>630</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 0px;
+border-radius:10px;
+border-color: rgb(251, 234, 255);
+background-color: rgb(34, 57, 187);
+font: 11pt &quot;Space Grotesk&quot;;
+color: rgb(251, 234, 255);
+text-align: center;</string>
+    </property>
+    <property name="text">
+     <string>Ir a resultados</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
