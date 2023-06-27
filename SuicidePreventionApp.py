@@ -19,7 +19,6 @@ from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QTableWidgetItem
 import tensorflow as tf
 import os
 import sys
-
 file_dir = os.path.join(os.getcwd(), "SEANCE-master")
 sys.path.append(file_dir)
 import SEANCE_1_2_0
@@ -365,6 +364,8 @@ class DeleteTableDialog(QDialog):
     def __init__(self):
         super().__init__()
         loadUi("BorrarTablaMensaje.ui", self)
+        self.setWindowTitle("Empty table")
+        self.move(widget.x()+widget.width()//2-self.width()//2, widget.y()+widget.height()//2-self.height()//2)
         self.yesButton.clicked.connect(self.empty_table)
         self.noButton.clicked.connect(self.close)
         if results.lenguageComboBox.currentText() == "Español":
@@ -375,6 +376,7 @@ class DeleteTableDialog(QDialog):
 
     def empty_table(self):
         results.tableWidget.clear()
+        results.tableWidget.setRowCount(0)
         if results.lenguageComboBox.currentText() == "Español":
             results.tableWidget.setHorizontalHeaderLabels(["Usuario", "Tweet", "Resultado clasificación"])
         else:
@@ -395,8 +397,6 @@ class AnalysisThread(QThread):
         df_tweets = self.data_extraction(self.users)
 
         self.update_progressbar.emit(55, "All tweets extracted", "Todos los tweets extraídos")
-        print(df_tweets.info)
-        print(df_tweets.iloc[:2, :2])
         df_lexicons = self.process_tweets_lexicons(df_tweets, 'Tweets')
         self.update_progressbar.emit(65, "Processed with lexicons", "Procesado con léxicos")
         df_w2v = self.process_tweets_word2vec(df_tweets, 'Tweets')
@@ -437,6 +437,7 @@ class AnalysisThread(QThread):
         options.add_argument("--no-sandbox")
         options.add_argument("--start-maximized")
         options.add_argument('--disable-gpu')
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
         # driver = webdriver.Chrome(executable_path=DRIVER_PATH)
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -496,12 +497,11 @@ class AnalysisThread(QThread):
             millones = numTweetsString.find('M Tweets')
             if miles == -1 and millones == -1:
                 end = numTweetsString.find(' Tweets')
-                numTweets = int(numTweetsString[:end])
+                numTweets = int(numTweetsString[:end].replace(",", ""))
                 if numTweets > 30:
                     numTweets = 30
             else:
                 numTweets = 30  # Max 30 tweets
-
             numTweetsTotales += numTweets
             scrollDistance = 0
             valorCargaPorPublicacion = valorCargaPorUsuario//numTweets
@@ -516,7 +516,7 @@ class AnalysisThread(QThread):
                         UserTag = article.find_element(By.XPATH, ".//div[@data-testid='User-Name']").text.replace('\n',
                                                                                                                   ' ')
                     except NoSuchElementException:
-                        if miles == -1 and millones == -1 and int(numTweetsString[:end]) < 50:  # few tweets
+                        if miles == -1 and millones == -1 and int(numTweetsString[:end].replace(",", "")) < 50:  # few tweets
                             numTweetsTotales -=1
                         print("Tweet sin texto o etiqueta de usuario")
                         break

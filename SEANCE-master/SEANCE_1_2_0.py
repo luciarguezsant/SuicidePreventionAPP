@@ -1,8 +1,6 @@
 #-*- coding: utf-8 -*- 
 from __future__ import division
 
-import sys
-
 #import spacy #this is for if spaCy is used
 import tkinter as tk
 import tkinter.font
@@ -19,8 +17,6 @@ import vaderSentiment
 import re
 import platform
 import glob
-import math
-from collections import Counter
 import pandas as pd
 from threading import Thread
 
@@ -617,8 +613,8 @@ def main( df, columnTextName, var_list):
 
 		
 		print("Importing databases...\n")
-
-		affect_list = open(resource_path('SEANCE-master/data_files/affective_list.txt'), 'rU').read()
+		affect_dir = os.path.join(file_dir, 'affective_list.txt')
+		affect_list = open(affect_dir, 'rU').read()
 
 		#this cleans up the affect list
 		affect_list = re.sub('\t\t', '', affect_list)#makes all double tabs nothing
@@ -635,7 +631,7 @@ def main( df, columnTextName, var_list):
 			entries = line.split("\t") #splits entries in .csv file at tab
 			affect_dict[entries[0]] = entries[1:]
 
-		GI_list = open(resource_path('SEANCE-master/data_files/inquirerbasic.txt'), 'rU').readlines()
+		GI_list = open(os.path.join(file_dir, 'inquirerbasic.txt'), 'rU').readlines()
 		GI_dict={}
 
 		for line in GI_list:
@@ -645,13 +641,14 @@ def main( df, columnTextName, var_list):
 
 			
 		#defines program files
-		lemma_list = open(resource_path('SEANCE-master/data_files/e_lemma_py_format_lower.txt'), 'rU').readlines()
-		anew_list = open(resource_path('SEANCE-master/data_files/affective_norms.txt'), 'rU').readlines()
-		sentic_list = open(resource_path('SEANCE-master/data_files/senticnet_data.txt'), 'rU').readlines()
-		lu_hui_positive = open(resource_path('SEANCE-master/data_files/positive_words.txt'), 'rU').read().split("\n")
-		lu_hui_negative = open(resource_path('SEANCE-master/data_files/negative_words.txt'), 'rU').read().split("\n")
-		
-		components_2 = component_dicter(resource_path('SEANCE-master/components/C*.txt'))
+		lemma_list = open(os.path.join(file_dir, 'e_lemma_py_format_lower.txt'), 'rU').readlines()
+		anew_list = open(os.path.join(file_dir, 'affective_norms.txt'), 'rU').readlines()
+		sentic_list = open(os.path.join(file_dir, 'senticnet_data.txt'), 'rU').readlines()
+		lu_hui_positive = open(os.path.join(file_dir, 'positive_words.txt'), 'rU').read().split("\n")
+		lu_hui_negative = open(os.path.join(file_dir, 'negative_words.txt'), 'rU').read().split("\n")
+
+
+		components_2 = component_dicter(os.path.join(os.getcwd(), "SEANCE-master", "components", "C*.txt"))
 		
 			
 		#creates dictionary for lemma list
@@ -1154,6 +1151,7 @@ def main( df, columnTextName, var_list):
 			import spacy
 			#from spacy.util import set_data_path
 			#spacy.util.set_data_path(resource_path('SEANCE-master/en_core_web_sm'))
+			#file_dir = os.path.join(os.getcwd(), "SEANCE-master", "data_files")
 			nlp = spacy.load(resource_path('en_core_web_sm'))
 	
 ####Beginning of file iteration#######
