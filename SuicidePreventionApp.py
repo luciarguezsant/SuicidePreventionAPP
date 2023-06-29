@@ -27,7 +27,8 @@ import SEANCE_1_2_0
 class WelcomeWindow(QDialog):
     def __init__(self):
         super().__init__()
-        loadUi("Welcome.ui", self)
+        path = os.path.join("Interface","Welcome.ui")
+        loadUi(path, self)
         self.startButton.clicked.connect(self.go_to_app)
         self.lenguageComboBox.currentTextChanged.connect(self.on_combobox_changed)
         self.label_4.setPixmap(QPixmap("logo.png"))
@@ -43,7 +44,8 @@ class WelcomeWindow(QDialog):
 class BienvenidoWindow(QDialog):
     def __init__(self):
         super().__init__()
-        loadUi("Bienvenido.ui", self)
+        path = os.path.join("Interface", "Bienvenido.ui")
+        loadUi(path, self)
         self.startButton.clicked.connect(self.go_to_app)
         self.lenguageComboBox.currentTextChanged.connect(self.on_combobox_changed)
         self.label_4.setPixmap(QPixmap("logo.png"))
@@ -58,7 +60,8 @@ class BienvenidoWindow(QDialog):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        loadUi("appInterface.ui", self)
+        path = os.path.join("Interface", "appInterface.ui")
+        loadUi(path, self)
         self.addButton.clicked.connect(self.add_account)
         self.addTestAccButton.clicked.connect(self.add_test_accounts)
         self.backButton.clicked.connect(self.go_back)
@@ -179,7 +182,8 @@ class MainWindow(QMainWindow):
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
-        loadUi("appInterfazEs.ui", self)
+        path = os.path.join("Interface", "appInterfazEs.ui")
+        loadUi(path, self)
         self.addButton.clicked.connect(self.add_account)
         self.addTestAccButton.clicked.connect(self.add_test_accounts)
         self.backButton.clicked.connect(self.go_back)
@@ -302,7 +306,8 @@ class VentanaPrincipal(QMainWindow):
 class ResultsWindow(QDialog):
     def __init__(self):
         super().__init__()
-        loadUi("Results.ui", self)
+        path = os.path.join("Interface", "Results.ui")
+        loadUi(path, self)
         self.backButton.clicked.connect(self.go_back)
         self.tableWidget.setColumnCount(3)
         self.continueButton.clicked.connect(self.go_back)
@@ -363,7 +368,8 @@ class ResultsWindow(QDialog):
 class DeleteTableDialog(QDialog):
     def __init__(self):
         super().__init__()
-        loadUi("BorrarTablaMensaje.ui", self)
+        path = os.path.join("Interface", "BorrarTablaMensaje.ui")
+        loadUi(path, self)
         self.setWindowTitle("Empty table")
         self.move(widget.x()+widget.width()//2-self.width()//2, widget.y()+widget.height()//2-self.height()//2)
         self.yesButton.clicked.connect(self.empty_table)
@@ -545,8 +551,8 @@ class AnalysisThread(QThread):
 
     # Codigo de preprocesamiento con Word2Vec
     def process_tweets_word2vec(self, dfTweets, columnTextName):
-
-        model = Word2Vec.load("Word2VecModelFinal")
+        path = os.path.join("Word2VecModel", "Word2VecModelFinal")
+        model = Word2Vec.load(path)
         dfW2V = pd.DataFrame(columns=[*range(0, 100)])
 
         for indice, fila in dfTweets.iterrows():
