@@ -42,19 +42,25 @@ Once executed, the application will start, which may take 2-10 seconds depending
 ## User manual
 The first visible screen of the application is the welcome screen in English, shown below. This is the welcoming screen where the user can read a brief explanation about the usage of the application and switch the language to Spanish if preferred. Once the user is ready, they can press the bottom button to start, which will take them to the classifier screen.
 
+![Welcome](https://github.com/luciarguezsant/SuicidePreventionAPP/assets/96202939/79f300e8-611b-4bc4-a5c5-fb5c9b0fe12c)
 
 Once the user has decided to start, they can proceed to the classifier screen, which is shown in the following image. Here, the user can enter the Twitter account identifiers they want to analyze and add them to the list. Additionally, they also have the option to automatically add test accounts with the "Add test accounts" button. While choosing the accounts to analyze, it is possible to remove a selected account or clear the entire list using the blue buttons "Delete account" and "Empty list". Once the user is satisfied with the list, they can press the "Analyce accounts" button, which will launch a new execution thread to extract, process, and classify the posts from the chosen accounts. Once this process is complete, the results will be displayed on the corresponding screen.
 
 At the bottom of the classifier screen, there is a "Go to results" button that takes you to the results screen. However, without having analyzed anything, this screen will be empty.
 
+![Classifier](https://github.com/luciarguezsant/SuicidePreventionAPP/assets/96202939/0e8e1fdc-5230-4bf1-b802-a455b0deeeee)
 
 In the following image, the classifier screen can be observed, showing the appearance of this window once the analysis execution has been launched. The button to view the results disappears, and in its place, a progress bar appears indicating the progress level of the operation. The "Stop Analysis" button is also shown, which will terminate the operation if the user wishes to stop it or has made a mistake.
 
+![Analyzing](https://github.com/luciarguezsant/SuicidePreventionAPP/assets/96202939/2cb5ba66-1e65-4994-8b9a-2f6b475d826e)
 
 Once the analysis execution is completed, the results are added to a 3-column table on the results screen. The results screen features a large table where the first column displays the user to whom the tweet belongs, the second column shows the analyzed tweet, and the third column presents the classification result obtained by the classifier. Some entries, marked with an orange star, have two user identifiers. This is because they are retweeted tweets, where the first identifier corresponds to the analyzed account that retweeted the tweet, and the second identifier represents the original account that wrote the post. The entry marked with a green star is a normal post written by the user themselves.
 
 In this window, it is possible to review the posts and their final classifications. When the user is finished, they can continue classifying more user posts by clicking on the "Continue classifying" button, which will not modify the table. If the user decides to analyze more accounts, the results will be added to the table without deleting the previous ones.
 
+![Results](https://github.com/luciarguezsant/SuicidePreventionAPP/assets/96202939/10143031-8c86-4ae8-a437-d34b862a7875)
 
 If the user prefers to clear the table, they can do so by clicking the "Empty table" button. This will open a dialog to ensure that they definitely want to empty all the entries in the table.
+
+![Delete](https://github.com/luciarguezsant/SuicidePreventionAPP/assets/96202939/fd115cde-b926-4644-9674-302e7b2570c6)
 
