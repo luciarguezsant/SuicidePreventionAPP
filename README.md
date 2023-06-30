@@ -20,8 +20,6 @@ To run the application using the code, it is necessary to have the libraries on 
 - gensim
 - PyQt5
 - tensorflow
-- os
-- sys
 - spacy
 - queue
 - re
