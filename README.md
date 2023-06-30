@@ -21,10 +21,6 @@ To run the application using the code, it is necessary to have the libraries on 
 - PyQt5
 - tensorflow
 - spacy
-- queue
-- re
-- platform
-- glob
 
 To install a library, execute the following command in your terminal:
 ```
