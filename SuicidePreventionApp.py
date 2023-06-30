@@ -407,9 +407,9 @@ class AnalysisThread(QThread):
         self.update_progressbar.emit(65, "Processed with lexicons", "Procesado con léxicos")
         df_w2v = self.process_tweets_word2vec(df_tweets, 'Tweets')
         self.update_progressbar.emit(85, "Processed with Word2Vec", "Procesado con Word2Vec")
-        
         del df_lexicons["filename"]
         del df_lexicons["nwords"]
+
         df_lexicons.reset_index(drop=True, inplace=True)
         df_w2v.reset_index(drop=True, inplace=True)
         df_procesado_final = pd.concat([df_lexicons, df_w2v], axis=1)
@@ -453,16 +453,24 @@ class AnalysisThread(QThread):
         # Log in username
         username = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//input[@name='text']")))
         username.send_keys("SuicidePr3v3nt")
-        next_button = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Next')]")))
+        try:
+            next_button = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Next')]")))
+        except Exception:
+            next_button = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Siguiente')]")))
         next_button.click()
 
         # Password
         password = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//input[@name='password']")))
         password.send_keys('Cuentadeprevencion')  # Cuentadeprevencion
-        log_in = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Log in')]")))
+        try:
+            log_in = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Log in')]")))
+        except:
+            log_in = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, "//span[contains(text(),'Iniciar sesión')]")))
         log_in.click()
         self.update_progressbar.emit(cargaProgressBar, "Logged in successfully", "Sesión iniciada correctamente")
 

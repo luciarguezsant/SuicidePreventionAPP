@@ -2,12 +2,7 @@
 from __future__ import division
 
 #import spacy #this is for if spaCy is used
-import tkinter as tk
-import tkinter.font
-import tkinter.filedialog
-import tkinter.constants
 import queue
-from tkinter import messagebox
 
 import os
 import sys
@@ -18,7 +13,6 @@ import re
 import platform
 import glob
 import pandas as pd
-from threading import Thread
 
 def resource_path(relative):
 	if hasattr(sys, "_MEIPASS"):
@@ -51,12 +45,6 @@ dataQueue = queue.Queue()
 progress = "...Waiting for Data to Process"
 dataQueue.put(progress)
 
-#This creates a function for starting a new thread. The arguments are what TAALES needs to run
-#Def1 is the core TAALES program
-def start_thread(def1, arg1, arg2, arg3):
-	t = Thread(target=def1, args=(arg1, arg2, arg3))
-	t.start()
-
 		
 #This is how the correct path is given for program files.
 def resource_path(relative):
@@ -64,281 +52,7 @@ def resource_path(relative):
 		return os.path.join(sys._MEIPASS, relative)
 	return os.path.join(relative)
 	
-class MyApp:
-	def __init__(self, parent):
-		
-		#Creates font styles - Task: Make these pretty!
-		
-		
-		helv14= tkinter.font.Font(family= "Helvetica Neue", size=font_size)
-		times14= tkinter.font.Font(family= "Lucida Grande", size=font_size)
-		helv16= tkinter.font.Font(family= "Helvetica Neue", size = title_size, weight = "bold", slant = "italic")
-		
-		#This defines the GUI parent (ish)
-		self.myParent = parent
-		
-		#This creates the header text - Task:work with this to make more pretty!
-		self.spacer1= tk.Label(parent, text= "SEntiment ANalysis and Cognition Engine", font = helv16, background = color)
-		self.spacer1.pack()
-		
-		#This creates a frame for the meat of the GUI
-		self.thestuff= tk.Frame(parent, background =color)
-		self.thestuff.pack()
-		#Currently, the sizes aren't doing anything...
 
-		#Within the 'thestuff' frame, this creates a frame on the left for the buttons/input
-		self.myContainer1 = tk.Frame(self.thestuff, background = color)
-		self.myContainer1.pack(side = tk.RIGHT, expand = tk.TRUE)
-
-
-		#Text to be displayed above the widgets AND for a line to be placed around the elements
-		self.labelframe2 = tk.LabelFrame(self.myContainer1, text= "Instructions", background = color)
-		self.labelframe2.pack(expand=tk.TRUE)
-	
-	#Checkbox	
-		self.checkboxframe = tk.LabelFrame(self.myContainer1, text= "Indices", background = color, width = "45")
-		self.checkboxframe.pack(expand=tk.TRUE)
-
-		self.checkboxframe2 = tk.LabelFrame(self.myContainer1, text= "Words to Analyze", background = color, width = "45")
-		self.checkboxframe2.pack(expand=tk.TRUE)
-		
-		self.myContainer2 = tk.Frame(self.myContainer1, background = color)
-		self.myContainer2.pack(expand = tk.TRUE)
-		
-		self.checkboxframe3 = tk.LabelFrame(self.myContainer2, text= "Negation Control", background = color, width = "45")
-		self.checkboxframe3.grid(row=1,column=2, sticky = "W")
-		
-		self.checkboxframe4 = tk.LabelFrame(self.myContainer2, text= "Components", background = color, width = "45")
-		self.checkboxframe4.grid(row=1,column=1, sticky = "W")
-
-		self.cb2_var = tk.IntVar()
-		self.cb2 = ""
-		
-		self.cb3_var = tk.IntVar()
-		self.cb3 = tk.Checkbutton(self.checkboxframe, text="GALC", variable=self.cb3_var,background = color)
-		self.cb3.grid(row=1,column=1, sticky = "W")	
-		self.cb3.bind("<Button-1>", self.clicker)
-		self.cb3.deselect()
-		
-		self.cb4_var = tk.IntVar()
-		
-		self.cb4 = tk.Checkbutton(self.checkboxframe, text="EmoLex", variable=self.cb4_var,background = color)
-		self.cb4.grid(row=1,column=2, sticky = "W")	
-		self.cb4.deselect()
-		self.cb4.bind("<Button-1>", self.clicker)
-
-		self.cb5_var = tk.IntVar()
-		
-		self.cb5 = tk.Checkbutton(self.checkboxframe, text="ANEW", variable=self.cb5_var,background = color)
-		self.cb5.grid(row=1,column=3, sticky = "W")	
-		self.cb5.deselect()
-		self.cb5.bind("<Button-1>", self.clicker)
-
-		self.cb6_var = tk.IntVar()
-		self.cb6 = tk.Checkbutton(self.checkboxframe, text="SENTIC", variable=self.cb6_var,background = color)
-		self.cb6.grid(row=1,column=4, sticky = "W")	
-		self.cb6.deselect()
-		self.cb6.bind("<Button-1>", self.clicker)
-
-		self.cb7_var = tk.IntVar()
-		self.cb7 = tk.Checkbutton(self.checkboxframe, text="VADER", variable=self.cb7_var,background = color)
-		self.cb7.grid(row=2,column=1, sticky = "W")	
-		self.cb7.deselect()
-		self.cb7.bind("<Button-1>", self.clicker)
-		
-		self.cb8_var = tk.IntVar()
-		self.cb8 = tk.Checkbutton(self.checkboxframe, text="Hu-Liu", variable=self.cb8_var,background = color)
-		self.cb8.grid(row=2,column=2, sticky = "W")	
-		self.cb8.deselect()
-		self.cb8.bind("<Button-1>", self.clicker)
-		
-		self.cb9_var = tk.IntVar()		
-		self.cb9 = tk.Checkbutton(self.checkboxframe, text="GI", variable=self.cb9_var,background = color)
-		self.cb9.grid(row=2,column=3, sticky = "W")			
-		self.cb9.deselect()
-		self.cb9.bind("<Button-1>", self.clicker)
-		
-		self.cb10_var = tk.IntVar()	
-		self.cb10 = tk.Checkbutton(self.checkboxframe, text="Lasswell", variable=self.cb10_var,background = color)
-		self.cb10.grid(row=2,column=4, sticky = "W")	
-		self.cb10.deselect()
-		self.cb10.bind("<Button-1>", self.clicker)
-
-
-		self.cb11_var = tk.IntVar()
-		self.cb11 = tk.Checkbutton(self.checkboxframe2, text="Nouns", variable=self.cb11_var,background = color)
-		self.cb11.grid(row=1,column=2, sticky = "W")	
-		self.cb11.deselect()
-		
-		self.cb12_var = tk.IntVar()		
-		self.cb12 = tk.Checkbutton(self.checkboxframe2, text="Verbs", variable=self.cb12_var,background = color)
-		self.cb12.grid(row=1,column=3, sticky = "W")	
-		self.cb12.deselect()
-
-		self.cb13_var = tk.IntVar()
-		self.cb13 = tk.Checkbutton(self.checkboxframe2, text="Adjectives", variable=self.cb13_var,background = color)
-		self.cb13.grid(row=1,column=4, sticky = "W")	
-		self.cb13.deselect()
-
-		self.cb14_var = tk.IntVar()		
-		self.cb14 = tk.Checkbutton(self.checkboxframe2, text="Adverbs", variable=self.cb14_var,background = color)
-		self.cb14.grid(row=1,column=5, sticky = "W")	
-		self.cb14.deselect()
-		
-		self.cb15_var = tk.IntVar()		
-		self.cb15 = tk.Checkbutton(self.checkboxframe2, text="All Words", variable=self.cb15_var,background = color)
-		self.cb15.grid(row=1,column=1, sticky = "W")	
-		self.cb15.deselect()
-
-		self.cb16_var = tk.IntVar()		
-		self.cb16 = tk.Checkbutton(self.checkboxframe3, text="Three Left", variable=self.cb16_var,background = color)
-		self.cb16.grid(row=1,column=1, sticky = "W")	
-		self.cb16.deselect()
-				
-		self.cb18_var = tk.IntVar()
-		self.cb18 = tk.Checkbutton(self.checkboxframe4, text="Components", variable=self.cb18_var,background = color)
-		self.cb18.grid(row=1,column=1, sticky = "W")	
-		self.cb18.select()
-		
-		
-		self.var_list = [self.cb2_var,self.cb3_var,self.cb4_var,self.cb5_var,self.cb6_var,self.cb7_var,self.cb8_var,self.cb9_var,self.cb10_var,self.cb11_var,self.cb12_var,self.cb13_var,self.cb14_var,self.cb15_var,self.cb16_var,self.cb18_var]
-		
-		self.box_list = [self.cb3,self.cb4,self.cb5,self.cb6,self.cb7,self.cb8,self.cb9,self.cb10,self.cb11,self.cb12,self.cb13,self.cb14,self.cb15,self.cb16,self.cb18]
-		
-		self.cb_all = tk.Button(self.checkboxframe, text = "  Select All  ",justify = tk.LEFT)
-		self.cb_all.grid(row=1, column = 0)
-		self.cb_all.bind("<Button-1>", self.cb_all_Click)
-
-		self.cb_none = tk.Button(self.checkboxframe, text = "Select None")
-		self.cb_none.grid(row=2, column = 0)
-		self.cb_none.bind("<Button-1>", self.cb_none_Click)
-
-				
-		#This creates the list of instructions.	 There may be a better way to do this...
-		self.instruct = tk.Label(self.labelframe2, height = "9", width = "45", justify = tk.LEFT, padx = "4", pady= "6", anchor = tk.W, font = helv14, text ="1. Select desired indices, types of words to analyze,\n    and whether negation control is desired.\n2. Choose the input folder (where your files are).\n3. Select the folder you want the output file to go in.\n4. Give a name to the output file.\n5. Press the 'Process Texts' button.\n6. Please reference the SEANCE Index Spreadsheet\n    and the SEANCE help file (www.kristopherkyle.com)\n    for further assistance in interpreting the output.")
-		self.instruct.pack()
-				
-		#Creates Label Frame for Data Input area
-		self.secondframe= tk.LabelFrame(self.myContainer1, text= "Data Input", background = color)
-		self.secondframe.pack(expand=tk.TRUE) 
-		#This Places the first button under the instructions.
-		self.button1 = tk.Button(self.secondframe)
-		self.button1.configure(text= "Select Input Folder")
-		self.button1.pack()
-		
-		#This tells the button what to do when clicked.	 Currently, only a left-click
-		#makes the button do anything (e.g. <Button-1>). The second argument is a "def"
-		#That is defined later in the program.
-		self.button1.bind("<Button-1>", self.button1Click)
-		
-		#Creates default dirname so if statement in Process Texts can check to see
-		#if a directory name has been chosen
-		self.dirname = ""
-		
-		#This creates a label for the first program input (Input Directory)
-		self.inputdirlabel =tk.LabelFrame(self.secondframe, height = "1", width= "45", padx = "4", text = "Your selected input folder:", background = color)
-		self.inputdirlabel.pack()
-		
-		#Creates label that informs user which directory has been chosen
-		directoryprompt = "(No Folder Chosen)"
-		self.inputdirchosen = tk.Label(self.inputdirlabel, height= "1", width= "44", justify=tk.LEFT, padx = "4", anchor = tk.W, font= helv14, text = directoryprompt)
-		self.inputdirchosen.pack()
-		
-		#This creates the Output Directory button.
-		self.button2 = tk.Button(self.secondframe)
-		self.button2["text"]= "Choose Output Filename"
-		#This tells the button what to do if clicked.
-		self.button2.bind("<Button-1>", self.button2Click)
-		self.button2.pack()
-		self.outdirname = ""
-		
-		#Creates a label for the second program input (Output Directory)
-		self.outputdirlabel = tk.LabelFrame(self.secondframe, height = "1", width= "45", padx = "4", text = "Your selected filename:", background = color)
-		self.outputdirlabel.pack()
-		
-		#Creates a label that informs sure which directory has been chosen
-		#outdirectoryprompt = "(No output Folder Chosen)"
-		outdirectoryprompt = "(No Output Filename Chosen)"
-		self.input2 = ""
-		self.outputdirchosen = tk.Label(self.outputdirlabel, height= "1", width= "44", justify=tk.LEFT, padx = "4", anchor = tk.W, font= helv14, text = outdirectoryprompt)
-		self.outputdirchosen.pack()
-				
-		self.BottomSpace= tk.LabelFrame(self.myContainer1, text = "Run Program", background = color)
-		self.BottomSpace.pack()
-
-		self.button3= tk.Button(self.BottomSpace)
-		self.button3["text"] = "Process Texts"
-		self.button3.bind("<Button-1>", self.runprogram)
-		self.button3.pack()
-		
-		self.progresslabelframe = tk.LabelFrame(self.BottomSpace, text= "Program Status", background = color)
-		self.progresslabelframe.pack(expand= tk.TRUE)
-		
-		#progress = "...Waiting for Data to Process"
-		self.progress= tk.Label(self.progresslabelframe, height= "1", width= "45", justify=tk.LEFT, padx = "4", anchor = tk.W, font= helv14, text=progress)
-		self.progress.pack()
-		
-		self.poll(self.progress)
-		
-	def cb_all_Click(self, event):
-		for items in self.box_list[:8]:
-			items.select()
-		self.cb15.select()
-
-	def cb_none_Click(self, event):
-		for items in self.box_list[:8]:
-			items.deselect()
-		self.box_list[12].deselect()
-	
-	def clicker(self, event):
-		item = self.box_list[12]
-		item.select()	
-		
-	def entry1Return(self,event):
-		input= self.entry1.get()
-		self.input2 = input + ".csv"
-		self.filechosenchosen.config(text = self.input2)
-		self.filechosenchosen.update_idletasks()
-	
-	#Following is an example of how we can update the information from users...
-	def button1Click(self, event):
-		self.dirname = tkinter.filedialog.askdirectory(parent=root,title='Please select a directory')
-		print(self.dirname)
-		if self.dirname == "":
-			self.displayinputtext = "(No Folder Chosen)"
-		else: self.displayinputtext = '.../'+self.dirname.split('/')[-1]
-		self.inputdirchosen.config(text = self.displayinputtext)
-		
-
-	def button2Click(self, event):
-		self.outdirname = tkinter.filedialog.asksaveasfilename(parent=root, defaultextension = ".csv", initialfile = "results",title='Choose Output Filename')
-		print(self.outdirname)
-		if self.outdirname == "":
-			self.displayoutputtext = "(No Output Filename Chosen)"
-		else: self.displayoutputtext = '.../' + self.outdirname.split('/')[-1]
-		self.outputdirchosen.config(text = self.displayoutputtext)
-		
-	def runprogram(self, event):
-		self.poll(self.progress)
-		import tkinter.messagebox
-		if self.dirname == "":
-			tkinter.messagebox.showinfo("Supply Information", "Choose Input Directory")
-		if self.outdirname == "":
-			tkinter.messagebox.showinfo("Choose Output Filename", "Choose Output Filename")
-		if self.dirname != "" and self.outdirname != "":
-	
-			dataQueue.put("Starting Sentiment Tool...")
-			start_thread(main, self.dirname, self.outdirname, self.var_list)
-
-	def poll(self, function):
-		
-		self.myParent.after(10, self.poll, function)
-		try:
-			function.config(text = dataQueue.get(block=False))
-			
-			#root.update_idletasks()
-		except queue.Empty:
-			pass
 
 def main( df, columnTextName, var_list):
 
@@ -1478,16 +1192,8 @@ def main( df, columnTextName, var_list):
 		finishmessage = ("Processed " + str(nfiles) + " Files")
 		print(finishmessage)
 		# root.update_idletasks()
-		if system == "M":
-			#self.progress.config(text =finishmessage)
-			tkinter.messagebox.showinfo("Finished!", "Your files have been processed by Sentiment Tool!")
+
 		return df_lexicons
 
 
-if __name__ == '__main__':		
-	root = tk.Tk()
-	root.wm_title("SEANCE 1.2.0")
-	root.configure(background = color)
-	root.geometry(geom_size)
-	myapp = MyApp(root)
-	root.mainloop()
+
