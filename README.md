@@ -14,7 +14,6 @@ Download the code from the file SuicidePreventionApp_v1.0.0.zip (under the Relea
 To run the application using the code, it is necessary to have the libraries on which this software depends installed.
 #### Dependencies
 - pandas
-- time
 - selenium
 - webdriver_manager
 - nltk
