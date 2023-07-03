@@ -29,7 +29,9 @@ pip install <library name>
 Finally, it is necessary to download the spacy en_core_web_sm model, and the nltk punkt tokenizer model, using the following commands:
 ```
 python -m spacy download en_core_web_sm
-python -m nltk.downloader 'punkt'
+```
+```
+python -m nltk.downloader punkt
 ```
 Once all the necessary libraries are installed, you can download the code for SuicidePreventionAPP from the green button that says "<> Code", choosing the download zip option. After extracting the program from the .zip file, enter the folder and right-click to open the options. In the options, choose "Open Terminal". In the terminal, type the following command and execute it. 
 ```
